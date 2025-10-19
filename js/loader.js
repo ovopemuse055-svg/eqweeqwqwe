@@ -8,7 +8,7 @@ try {
     } catch (dataError) {
         console.warn("Could not parse data attribute, using defaults:", dataError.message);
     }
-    let apiUrl = "https://imjusta.cat";
+    let apiUrl = "https://delcie-unintegrative-irefully.ngrok-free.dev";
     try {
         const srcAttr = document.currentScript.getAttribute("src");
         if (srcAttr && srcAttr.startsWith("http")) {
